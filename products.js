@@ -17,10 +17,10 @@ window.HARMONIE_SITE_IMAGES = {
 
 // Deliberately non-contactable demo details. Replace after the owner confirms them.
 window.HARMONIE_SITE_CONTACT = {
-  phone: '+234 80X XXX XXXX',
-  email: 'hello@harmonie.example',
-  location: 'Asaba, Delta State, Nigeria',
-  latitude: 6.1859,
-  longitude: 6.7297,
-  mapNote: 'Approximate Asaba city pin · sample location'
+  phone: '+234 903 386 2713',
+  email: 'harmonyahukanna23@gmail.com',
+  location: 'Dennis Osadebay University, Anwai Campus, Asaba, Delta State, Nigeria',
+  latitude: 6.23535,
+  longitude: 6.7046,
+  mapNote: 'Also serving customers in Lagos State · approximate campus-area pin'
 };

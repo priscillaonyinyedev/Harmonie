@@ -1,4 +1,6 @@
 import './products.js';
+import { cloudConfig, cloudIsConfigured } from './cloud-config.js';
+import { cloudLogin, cloudRefresh, cloudRead, cloudWrite, cloudUpload } from './cloud.js';
 
 (() => {
   // Portfolio 2.0 type family: Fraunces, Archivo, and Space Mono.
@@ -20,6 +22,9 @@ import './products.js';
   const money = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 });
   let products = loadProducts();
   let editingId = null;
+  let ownerToken = null;
+  let ownerRefreshToken = null;
+  let tokenExpiresAt = 0;
 
   const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const photo = (value, width = 900) => /^(data:image\/|https?:\/\/)/i.test(value || '')
@@ -120,13 +125,76 @@ import './products.js';
     return starterProducts.map(product => ({ ...product }));
   }
 
-  function saveProducts() {
+  function showCloudStatus(message = '') {
+    const status = document.querySelector('#collection-sync-warning');
+    status.textContent = message;
+    status.hidden = !message;
+  }
+
+  function cacheCurrentContent() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
+    localStorage.setItem(SITE_IMAGES_KEY, JSON.stringify(siteImages));
+    localStorage.setItem(SITE_CONTACT_KEY, JSON.stringify(siteContact));
+  }
+
+  async function uploadDataImage(value, folder) {
+    if (typeof value === 'string' && value.startsWith('data:image/')) return cloudUpload(await ensureOwnerToken(), value, folder);
+    return value;
+  }
+
+  async function ensureOwnerToken() {
+    if (!ownerToken) throw new Error('Sign in to the owner studio before publishing shared changes.');
+    if (Date.now() > tokenExpiresAt - 60000 && ownerRefreshToken) {
+      const session = await cloudRefresh(ownerRefreshToken);
+      ownerToken = session.access_token;
+      ownerRefreshToken = session.refresh_token;
+      tokenExpiresAt = Date.now() + Number(session.expires_in || 3600) * 1000;
+    }
+    return ownerToken;
+  }
+
+  async function publishCurrentContent() {
+    if (!cloudIsConfigured()) { cacheCurrentContent(); return; }
+    await ensureOwnerToken();
+    const images = { ...siteImages };
+    for (const key of Object.keys(images)) images[key] = await uploadDataImage(images[key], 'site');
+    const publicProducts = [];
+    for (const product of products) {
+      const gallery = await Promise.all(galleryFor(product).map(image => uploadDataImage(image, 'products')));
+      publicProducts.push({ ...product, image: gallery[0] || '', gallery });
+    }
+    await cloudWrite(await ensureOwnerToken(), { products: publicProducts, site_images: images, site_contact: siteContact });
+    products = publicProducts;
+    siteImages = images;
+    cacheCurrentContent();
+    applySiteImages();
+    renderContact();
+    render();
+    showCloudStatus('Collection is published for all visitors.');
+  }
+
+  async function loadSharedContent() {
+    if (!cloudIsConfigured()) {
+      showCloudStatus('Showing the sample collection. Shared updates are not connected yet; add the Supabase settings before owner edits can publish to every visitor.');
+      return;
+    }
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-      return true;
+      const content = await cloudRead();
+      if (content) {
+        products = Array.isArray(content.products) ? content.products : starterProducts.map(product => ({ ...product }));
+        siteImages = content.site_images || { ...starterSiteImages };
+        siteContact = content.site_contact || { ...starterSiteContact };
+        cacheCurrentContent();
+        applySiteImages();
+        renderContact();
+        render();
+        showCloudStatus('Showing the latest owner-published collection.');
+      } else {
+        showCloudStatus('The shared collection is ready for its first publish. Sign into Owner studio to publish the current collection.');
+      }
     } catch (error) {
-      alert('The browser is out of storage space. Download the catalogue, then remove some large photos and try again.');
-      return false;
+      console.warn('Could not load the shared HARMONIE collection.', error);
+      showCloudStatus('Could not reach the shared collection. Showing the saved sample collection for now.');
     }
   }
 
@@ -211,19 +279,42 @@ import './products.js';
     adminManager.hidden = true;
     adminLogin.hidden = false;
     adminError.textContent = '';
+    ownerToken = null;
+    ownerRefreshToken = null;
+    tokenExpiresAt = 0;
   });
 
   document.querySelector('#admin-login-form').addEventListener('submit', event => {
     event.preventDefault();
-    if (event.currentTarget.elements.pin.value !== ADMIN_PIN) {
-      adminError.textContent = 'That passcode did not match. Try again.';
-      return;
-    }
-    adminError.textContent = '';
-    event.currentTarget.reset();
-    adminLogin.hidden = true;
-    adminManager.hidden = false;
-    renderAdminList();
+    const form = event.currentTarget;
+    const signIn = async () => {
+      if (cloudIsConfigured()) {
+        const session = await cloudLogin(form.elements.email.value.trim(), form.elements.password.value);
+        ownerToken = session.access_token;
+        ownerRefreshToken = session.refresh_token;
+        tokenExpiresAt = Date.now() + Number(session.expires_in || 3600) * 1000;
+        const content = await cloudRead();
+        if (content) {
+          products = Array.isArray(content.products) ? content.products : [];
+          siteImages = content.site_images || {};
+          siteContact = content.site_contact || siteContact;
+          cacheCurrentContent();
+          applySiteImages();
+          renderContact();
+          render();
+        } else {
+          await publishCurrentContent();
+        }
+      } else if (form.elements.pin.value !== ADMIN_PIN) {
+        throw new Error('That passcode did not match. Try again.');
+      }
+      adminError.textContent = '';
+      form.reset();
+      adminLogin.hidden = true;
+      adminManager.hidden = false;
+      renderAdminList();
+    };
+    signIn().catch(error => { adminError.textContent = cloudIsConfigured() ? `Could not sign in: ${error.message}` : error.message; });
   });
 
   document.querySelector('#admin-logout').addEventListener('click', () => adminDialog.close());
@@ -234,25 +325,27 @@ import './products.js';
   siteContactForm.elements.location.value = siteContact.location || '';
   siteContactForm.elements.latitude.value = siteContact.latitude || 6.1859;
   siteContactForm.elements.longitude.value = siteContact.longitude || 6.7297;
-  siteContactForm.addEventListener('submit', event => {
+  siteContactForm.addEventListener('submit', async event => {
     event.preventDefault();
     if (!siteContactForm.reportValidity()) return;
     const values = new FormData(siteContactForm);
+    const previous = siteContact;
     const next = {
       phone: String(values.get('phone')).trim(),
       email: String(values.get('email')).trim(),
       location: String(values.get('location')).trim(),
       latitude: Number(values.get('latitude')),
       longitude: Number(values.get('longitude')),
-      mapNote: ''
+      mapNote: 'Also serving customers in Lagos State · approximate campus-area pin'
     };
     try {
-      localStorage.setItem(SITE_CONTACT_KEY, JSON.stringify(next));
       siteContact = next;
+      await publishCurrentContent();
       renderContact();
-      document.querySelector('#contact-save-status').textContent = 'Saved on this device. Export the catalogue to publish.';
+      document.querySelector('#contact-save-status').textContent = cloudIsConfigured() ? 'Published for all visitors.' : 'Saved only in this browser. Shared publishing is not connected yet.';
     } catch (error) {
-      document.querySelector('#contact-save-status').textContent = 'Could not save: this browser may be out of storage.';
+      siteContact = previous;
+      document.querySelector('#contact-save-status').textContent = `Could not save: ${error.message}`;
     }
   });
 
@@ -319,13 +412,16 @@ import './products.js';
       if (!file) return;
       const status = document.querySelector('#site-photo-status');
       status.textContent = 'Preparing photo…';
+      const previous = siteImages;
       try {
         const nextImages = { ...siteImages, [slot]: await compressImage(file) };
-        localStorage.setItem(SITE_IMAGES_KEY, JSON.stringify(nextImages));
         siteImages = nextImages;
+        await publishCurrentContent();
         applySiteImages();
-        status.textContent = 'Photo saved on this device. Download the catalogue to publish it for customers.';
+        status.textContent = cloudIsConfigured() ? 'Photo published for all visitors.' : 'Photo saved in this browser only. Connect shared publishing to update visitors.';
       } catch (error) {
+        siteImages = previous;
+        applySiteImages();
         status.textContent = error.message || 'That photo could not be saved. Try a smaller image.';
       }
       event.currentTarget.value = '';
@@ -368,10 +464,14 @@ import './products.js';
       const previous = products.map(item => ({ ...item }));
       if (existing) products[current] = updated;
       else products.unshift(updated);
-      if (saveProducts()) {
+      try {
+        await publishCurrentContent();
         resetEditor();
         render();
-      } else products = previous;
+      } catch (error) {
+        products = previous;
+        alert(`Could not publish the change: ${error.message}`);
+      }
     } catch (error) {
       alert(error.message || 'The photo could not be added. Please try another image.');
     } finally {
@@ -381,7 +481,7 @@ import './products.js';
     }
   });
 
-  document.querySelector('#admin-product-list').addEventListener('click', event => {
+  document.querySelector('#admin-product-list').addEventListener('click', async event => {
     const editButton = event.target.closest('[data-edit]');
     if (editButton) {
       const product = products.find(item => item.id === editButton.dataset.edit);
@@ -394,7 +494,8 @@ import './products.js';
     if (!product || !confirm(`Delete “${product.name}” from the collection?`)) return;
     const previous = products;
     products = products.filter(item => item.id !== product.id);
-    if (!saveProducts()) products = previous;
+    try { await publishCurrentContent(); }
+    catch (error) { products = previous; alert(`Could not publish the deletion: ${error.message}`); }
     if (editingId === product.id) resetEditor();
     render();
   });
@@ -414,8 +515,18 @@ import './products.js';
   setThemeColor();
   themeQuery.addEventListener?.('change', setThemeColor);
 
+  if (cloudIsConfigured()) {
+    document.querySelector('#local-pin-field').hidden = true;
+    document.querySelector('#local-pin-field').querySelector('input').required = false;
+    document.querySelector('#cloud-email-field').hidden = false;
+    document.querySelector('#cloud-password-field').hidden = false;
+    document.querySelector('#cloud-email-field').querySelector('input').required = true;
+    document.querySelector('#cloud-password-field').querySelector('input').required = true;
+    document.querySelector('#admin-login-note').textContent = 'Sign in with the owner account created in the connected Supabase project.';
+  }
   applySiteImages();
   renderContact();
-  document.querySelector('#year').textContent = new Date().getFullYear();
   render();
+  loadSharedContent();
+  if (cloudIsConfigured()) window.setInterval(() => { if (!ownerToken) loadSharedContent(); }, 30000);
 })();

@@ -1,30 +1,37 @@
 # HARMONIE
 
-A lightweight product showcase for HARMONIE, built with HTML, CSS, vanilla JavaScript, and Tailwind CSS utilities. The typography matches Portfolio 2.0: Fraunces for display type, Archivo for body text, and Space Mono for labels. There is no backend. Open `index.html` directly, or use the VS Code Live Server extension; Live Server is recommended for saving studio edits.
+A phone-first crochet showcase built with HTML, CSS, vanilla JavaScript, Tailwind utilities, and Vite. Typography follows Portfolio 2.0: Fraunces, Archivo, and Space Mono. The layout responds to a visitor's system light or dark preference.
 
-## Update the products
+## Collection and photos
 
-Edit `products.js` to change product names, descriptions, categories, prices, and photos. Add a new object to `window.HARMONIE_PRODUCTS` to add a card. Product images currently use Unsplash examples; replace the image ID with a real photo from the brand. The sample product details and prices should be replaced with her current information before publishing.
+`products.js` contains sample products and the first-visit contact details. Replace the sample fashion photos with HARMONIE's own work in Owner studio. Broken images show a designed fallback rather than an empty block.
 
-The **Owner studio** button is visible in the top navigation and footer. Click it, enter the starter passcode `change-me`, and the product manager opens. Set a personal value in `script.js` before sharing the site. She can replace the home and story photos, edit contact details and map coordinates, add a product with several photos, edit product details, add or replace gallery photos, and delete products. Her edits are saved only in that browser. Download the updated `products.js` catalogue and replace the project file to publish photos, contact, and product changes for customers.
+Owner studio lets the owner add, edit, replace photos, and delete products. When shared storage is configured, each change is published to the hosted catalogue and appears to visitors on their next page load (already-open pages refresh the catalogue about every 30 seconds). Product photos are compressed and uploaded to Supabase Storage.
 
-The contact section uses a deliberately masked Nigerian sample number, the reserved `example` email domain, and an approximate Asaba city-center map pin. In Owner studio, update the contact fields and map coordinates when she confirms them. The map pin is city-level only, not a claimed home or studio address.
+Without shared storage configured, changes are saved in that browser only. A static Vercel deployment cannot share browser-local edits with customers or write its own deployed files. Do not promise that edits sync until the Supabase setup below is complete.
 
-Because this is a static site, the passcode is visible to someone who inspects the JavaScript source. It helps keep the editing controls out of the way, but it is not secure authentication. Edits also do not sync between browsers or devices unless the exported catalogue is used to update the site files.
+## Connect shared publishing (Supabase)
 
-Supported filters are `Tops`, `Dresses`, and `Accessories`. Use one of those category names for each product, or add a matching filter in `index.html`.
+1. Create a Supabase project and open **SQL Editor**. Run [`supabase/setup.sql`](supabase/setup.sql).
+2. In Supabase Authentication, disable public sign-ups and create one owner account for `harmonyahukanna23@gmail.com`. This keeps authenticated write access limited to the owner account.
+3. Copy the project's **Project URL** and **publishable key** (or legacy anon key) into `url` and `publicKey` in [`cloud-config.js`](cloud-config.js). Never use a service-role key in browser code.
+4. Redeploy the Vite site to Vercel. Open Owner studio on the deployed site and sign in with the owner account. On first sign-in, the current sample catalogue is published. The owner can then replace it with her real product photos.
+
+The public storefront can read the published catalogue and photos. Uploads and catalogue changes require the signed-in owner. Owner credentials are entered into the sign-in form and are not stored by the site. Contact changes and home/story photo updates use the same shared publishing flow.
+
+## Current contact details
+
+The site currently shows the phone and email supplied for HARMONIE, the Dennis Osadebay University Anwai Campus address in Asaba, and that HARMONIE also sells in Lagos State. The map pin is an approximate campus-area pin, not a private residence or exact shop location. The owner can adjust the contact and map fields in Owner studio.
+
+## Local development and deploy
+
+Run `npm install`, then `npm run dev` for local work. `npm run build` creates the Vercel-ready `dist` folder. The included `vercel.json` sets the build and output directory. Font and Tailwind CDN assets need an internet connection.
 
 ## Files
 
-- `index.html` — page content, Tailwind CDN, font loading, and metadata.
-- `styles.css` — brand styling and responsive layout.
-- `script.js` — product cards, category filters, and product details dialog.
-- `products.js` — editable product showcase data.
-- `favicon.svg` — HARMONIE brand icon.
-- `vercel.json` — Vercel build and output settings.
-
-The layout follows Portfolio 2.0's 1200px centered grid, rounded header and buttons, consistent 16px desktop / 14px mobile body copy, and 12px / 10px mono labels. The color palette switches automatically between light and dark using the visitor's phone or computer appearance setting. Starter fashion photos are examples; replace them with HARMONIE's own photos in Owner studio. If an external example photo fails to load, a designed HARMONIE fallback appears instead of a blank box. Tailwind utilities and fonts load from external services, so an internet connection is needed for those assets. The page structure and custom styling remain in the local files.
-
-## Deploy to Vercel
-
-Push the project to a Git repository and import it in Vercel. The included configuration runs `npm run build` and serves the generated `dist` folder. You can also run `npm run build` locally to check that the deployment build completes.
+- `index.html` — storefront, collection, contact section, map, and Owner studio.
+- `styles.css` — responsive brand styling and light/dark appearance.
+- `script.js` — storefront rendering, owner tools, and publishing flow.
+- `cloud.js`, `cloud-config.js` — small Supabase REST client and public project settings.
+- `products.js` — editable sample products and contact defaults.
+- `supabase/setup.sql` — database, read access, owner write access, and image bucket policies.
