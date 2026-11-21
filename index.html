@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f4eb">
+  <meta name="description" content="Handmade crochet pieces, thoughtfully made and ready to become yours. Explore the HARMONIE collection.">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={theme:{extend:{colors:{ink:'#171315',rose:'#d95783',blush:'#f5dbe4',cream:'#f9f5f1'},fontFamily:{sans:['Archivo','sans-serif'],serif:['Fraunces','serif'],mono:['Space Mono','monospace']}}}}</script>
+  <link rel="stylesheet" href="styles.css">
+  <title>HARMONIE — Handmade, with feeling</title>
+</head>
+<body>
+  <div class="announcement">A little something handmade, just for you <span aria-hidden="true">✳</span></div>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="Harmonie home">HARMONIE<span>.</span></a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#shop">Collection</a><a href="#story">Our story</a><a href="#custom">Custom pieces</a><a href="#contact">Contact</a>
+    </nav>
+    <a class="header-cta" href="#shop">Shop collection <span aria-hidden="true">↗</span></a>
+    <button class="header-admin open-admin" type="button">Owner studio <span aria-hidden="true">↗</span></button>
+    <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">☰</button>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="hero-kicker mono"><span class="spark">✳</span> HARMONIE · HANDMADE CROCHET</p>
+        <p class="hero-overline mono">SMALL BATCH · MADE WITH FEELING</p>
+        <h1>Softly made.<br><em>Unmistakably you.</em></h1>
+        <p class="hero-intro">Handmade crochet for the days you want to feel a little more like yourself. Thoughtful stitches, lovely textures, and pieces made with you in mind.</p>
+        <div class="hero-actions"><a class="button button-dark" href="#shop">Shop the pieces <span>↗</span></a><a class="text-link" href="#story">Get to know us <span>↓</span></a></div>
+        <div class="hero-note"><span class="note-star">✳</span><span>Made by hand, with care<br><b>Always a little one of a kind</b></span></div>
+      </div>
+      <div class="hero-visual">
+        <div class="photo-fallback hero-fallback" aria-hidden="true"><span>H</span><small>HARMONIE · MADE BY HAND</small></div>
+        <img id="hero-image" src="" alt="HARMONIE handmade crochet featured look" fetchpriority="high">
+        <div class="image-stamp"><span>THE</span><b>HARMONIE<br>FEELING</b><span>EST. WITH LOVE</span></div>
+        <div class="image-caption">HANDMADE IN SMALL BATCHES <span>✳</span></div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Harmonie values"><div>MADE WITH FEELING <span>✳</span> MADE TO BE YOURS <span>✳</span> MADE SLOWLY, WORN OFTEN <span>✳</span> MADE WITH FEELING <span>✳</span> MADE TO BE YOURS <span>✳</span></div></section>
+
+    <section class="section shop-section" id="shop">
+      <div class="section-head"><span><b class="section-index">01</b> A LITTLE LOVE, IN EVERY LOOP</span><span>THE HARMONIE COLLECTION</span></div>
+      <div class="shop-intro"><h2>Meet your next<br><em>favourite.</em></h2><p>Small-batch crochet pieces made for real life, long days, and all your lovely in-betweens.</p></div>
+      <div class="filters" role="group" aria-label="Filter products">
+        <button class="filter-chip active" data-filter="All" type="button">All pieces <span data-count="All"></span></button>
+        <button class="filter-chip" data-filter="Tops" type="button">Tops</button>
+        <button class="filter-chip" data-filter="Dresses" type="button">Dresses</button>
+        <button class="filter-chip" data-filter="Accessories" type="button">Accessories</button>
+      </div>
+      <div class="product-grid" id="product-grid" aria-live="polite"></div>
+      <div class="shop-footer"><p>Each piece is made by hand. Tiny differences are part of the magic.</p><a class="text-link" href="#custom">Looking for something personal? <span>↗</span></a></div>
+    </section>
+
+    <section class="story-section" id="story">
+      <div class="story-image"><div class="photo-fallback story-fallback" aria-hidden="true"><span>H</span><small>EVERY LOOP, MADE WITH LOVE</small></div><img id="story-image" src="" alt="HARMONIE crochet and creative process" loading="lazy"><span class="story-label">A SLOWER KIND OF BEAUTIFUL</span></div>
+      <div class="story-copy"><p class="eyebrow">A NOTE FROM HARMONIE</p><h2>Made by hand.<br><em>Made to mean something.</em></h2><p>HARMONIE is a small creative brand built around the things that make us feel at home in ourselves. Every crochet piece begins with a little idea, a lot of care, and the belief that what we wear can feel personal.</p><p>We make in small batches, take our time with the details, and hope each piece finds the person it was waiting for.</p><a class="text-link" href="#custom">Come make something yours <span>↗</span></a><div class="signature">With love, <span>Harmonie</span></div></div>
+    </section>
+
+    <section class="custom-section" id="custom"><div class="custom-mark">✳</div><p class="eyebrow">HAVE A LITTLE IDEA?</p><h2>Let’s make it <em>personal.</em></h2><p>Have a colour in mind, a special occasion, or a piece you can picture but haven’t found yet? We’d love to hear about it.</p><a class="button button-light" href="#contact">Ask about a custom piece <span>↗</span></a></section>
+
+    <section class="contact-section section" id="contact">
+      <div class="section-head"><span><b class="section-index">02</b> SAY HELLO</span><span>HARMONIE · DELTA STATE</span></div>
+      <div class="contact-layout"><div class="contact-copy"><p class="eyebrow">WE’RE AROUND ASABA</p><h2>Let’s talk<br><em>lovely things.</em></h2><p>Questions about a piece or a custom idea? Reach out and say hello.</p><div class="contact-details"><a class="contact-detail" id="contact-phone"><span>PHONE / WHATSAPP</span><b></b></a><a class="contact-detail" id="contact-email"><span>EMAIL</span><b></b></a><div class="contact-detail location-detail"><span>LOCATION</span><b id="contact-location"></b></div></div><p class="mock-note" id="contact-note"></p></div><div class="map-card"><iframe id="asaba-map" title="Map centered on Asaba, Delta State, Nigeria" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe><div class="map-caption"><span><b>HARMONIE · ASABA</b><small id="map-note">Sample city-center pin</small></span><a id="open-map" href="https://www.openstreetmap.org/" target="_blank" rel="noreferrer">OPEN MAP ↗</a></div></div></div>
+    </section>
+  </main>
+
+  <footer><a class="wordmark" href="#top">HARMONIE<span>✳</span></a><p>Made with care, for you to wear.</p><div class="footer-links"><a href="#shop">Collection</a><a href="#story">Our story</a><a href="#custom">Custom pieces</a><button class="admin-link open-admin" type="button">Owner studio ↗</button></div><div class="footer-credit"><span>© 2026 <b>PÉ Studio.</b> Crafted with intention.</span><a href="https://priscilla-portfolio-card.vercel.app/" target="_blank" rel="noopener noreferrer">Want a website like this? <b>See my portfolio ↗</b></a></div></footer>
+
+  <dialog class="product-dialog" id="product-dialog" aria-labelledby="dialog-title"><button class="dialog-close" type="button" aria-label="Close details">×</button><div id="dialog-content"></div></dialog>
+  <dialog class="admin-dialog" id="admin-dialog" aria-labelledby="admin-title">
+    <button class="dialog-close admin-close" type="button" aria-label="Close admin">×</button>
+    <section class="admin-login" id="admin-login"><p class="eyebrow">HARMONIE STUDIO</p><h2 id="admin-title">Owner <em>access.</em></h2><p>Sign in to manage the pieces in your showcase.</p><form id="admin-login-form"><label for="admin-pin">Studio passcode</label><input id="admin-pin" name="pin" type="password" autocomplete="current-password" required><button class="button button-dark" type="submit">Open studio <span>↗</span></button><p class="admin-error" id="admin-error" role="alert"></p></form><small>Change the starter passcode in <code>script.js</code> before sharing the website. A front-end passcode is a convenience, not secure authentication.</small></section>
+    <section class="admin-manager" id="admin-manager" hidden>
+      <div class="admin-heading"><div><p class="eyebrow">YOUR PRODUCT SHOWCASE</p><h2 id="manager-title">Manage <em>pieces.</em></h2></div><button class="admin-logout" id="admin-logout" type="button">Lock studio</button></div>
+      <p class="admin-intro">Add a piece, update its details, add or replace photos, or remove it from the public collection.</p>
+      <section class="site-photo-manager"><div class="site-photo-heading"><h3>Website pictures</h3><p>Replace the large home and story photos. They update here for you; export the catalogue to publish them for customers.</p></div><div class="site-photo-grid"><label class="site-photo-control"><span>Home feature photo</span><img id="admin-hero-preview" alt="Current home feature photo"><input id="admin-hero-file" type="file" accept="image/*"><small>Tap to choose a replacement</small></label><label class="site-photo-control"><span>Our story photo</span><img id="admin-story-preview" alt="Current Our Story photo"><input id="admin-story-file" type="file" accept="image/*"><small>Tap to choose a replacement</small></label></div><p class="site-photo-status" id="site-photo-status" role="status">Pictures are saved in this browser.</p></section>
+      <section class="site-contact-manager"><div class="site-photo-heading"><h3>Contact & location</h3><p>These are sample details. Replace them with her confirmed information before the final launch.</p></div><form id="site-contact-form" class="contact-admin-form"><label>Phone / WhatsApp<input name="phone" maxlength="40" required></label><label>Email<input name="email" type="email" maxlength="100" required></label><label class="admin-wide">Location / address<input name="location" maxlength="120" required></label><label>Map latitude<input name="latitude" type="number" min="-90" max="90" step="0.0001" required></label><label>Map longitude<input name="longitude" type="number" min="-180" max="180" step="0.0001" required></label><div class="admin-form-actions"><button class="button button-dark" type="submit">Save contact details <span>↗</span></button><span id="contact-save-status" role="status"></span></div></form></section>
+      <form id="product-form" class="admin-form">
+        <input name="id" type="hidden">
+        <label class="upload-field" for="product-image"><span class="upload-icon">＋</span><b id="upload-label">Choose product photos</b><small>Choose several photos · JPG, PNG, or WEBP</small><input id="product-image" type="file" accept="image/*" multiple></label>
+        <div class="admin-fields"><label>Product name<input name="name" maxlength="70" required placeholder="e.g. The Sunday Set"></label><label>Price in naira<input name="price" type="number" min="0" step="500" required placeholder="e.g. 45000"></label><label>Category<select name="category"><option>Tops</option><option>Dresses</option><option>Accessories</option></select></label><label>Short description<input name="detail" maxlength="90" required placeholder="A lovely detail about the piece"></label><label class="admin-wide">About this piece<textarea name="description" rows="3" maxlength="300" placeholder="Materials, fit, or what makes it special"></textarea></label><label class="admin-wide">When adding photos<select name="imageAction"><option value="keep">Keep current cover and add photos</option><option value="replace">Make the first new photo the cover</option></select></label><div class="admin-form-actions"><button class="button button-dark admin-submit" type="submit">Add to showcase <span>＋</span></button><button class="cancel-edit" id="cancel-edit" type="button" hidden>Cancel edit</button></div></div>
+      </form>
+      <div class="admin-list-head"><h3>In the showcase <span id="admin-product-count"></span></h3><button id="export-products" class="export-button" type="button">Download catalogue ↥</button></div>
+      <p class="export-help">Download the updated catalogue after making changes, then replace <code>products.js</code> on the website to publish them for everyone.</p>
+      <div id="admin-product-list" class="admin-product-list"></div>
+    </section>
+  </dialog>
+  <script type="module" src="./script.js"></script>
+</body>
+</html>

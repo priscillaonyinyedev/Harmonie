@@ -1,0 +1,9 @@
+{
+  "name": "HARMONIE Creative House",
+  "short_name": "HARMONIE",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f4eb",
+  "theme_color": "#f7f4eb",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
